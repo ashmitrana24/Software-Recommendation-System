@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Recommender</title>
+    <!-- Add Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add custom styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen">
+    <div class="container max-w-4xl mx-auto p-6">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="flex items-center justify-center mb-4">
+                    <i class="fas fa-laptop-code text-4xl text-indigo-600 mr-3"></i>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        Software Recommender
+                    </h1>
+                </div>
+                <p class="text-gray-600">Discover the perfect software for your needs</p>
+            </div>
+
+            <!-- Search Section -->
+            <div id="search-container" class="relative mb-8">
+                <div class="flex gap-3">
+                    <div class="relative flex-1">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input 
+                                type="text" 
+                                id="search-input" 
+                                class="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-white/50 backdrop-blur-sm"
+                                placeholder="Start typing to see available software..." 
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div id="available-software" class="absolute w-full mt-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 z-50"></div>
+                    </div>
+                    <button 
+                        onclick="getRecommendations()" 
+                        class="px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg"
+                    >
+                        <i class="fas fa-magic mr-2"></i>
+                        Get Recommendations
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="recommendations" class="recommendations space-y-4"></div>
+
+            <!-- Chart Section -->
+            <div class="chart-container mt-8 p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-lg">
+                <canvas id="similarityChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html> 
