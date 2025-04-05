@@ -254,4 +254,180 @@ document.getElementById('search-input').addEventListener('keypress', function(ev
     if (event.key === 'Enter') {
         getRecommendations();
     }
+});
+
+// Chatbot functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const chatbotTrigger = document.getElementById('chatbot-trigger');
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const closeChatbot = document.getElementById('close-chatbot');
+    const chatbotForm = document.getElementById('chatbot-form');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+
+    // Store conversation history
+    let conversationHistory = [];
+
+    // Toggle chatbot visibility
+    chatbotTrigger.addEventListener('click', function() {
+        chatbotContainer.classList.remove('hidden');
+        scrollToBottom();
+    });
+
+    closeChatbot.addEventListener('click', function() {
+        chatbotContainer.classList.add('hidden');
+    });
+
+    // Handle message submission
+    chatbotForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const userMessage = chatbotInput.value.trim();
+        if (userMessage === '') return;
+        
+        // Add user message to chat
+        addMessage(userMessage, 'user');
+        chatbotInput.value = '';
+        
+        // Add loading indicator
+        const loadingId = showLoadingIndicator();
+        
+        // Call Gemini API
+        fetchGeminiResponse(userMessage)
+            .then(response => {
+                // Remove loading indicator
+                removeLoadingIndicator(loadingId);
+                
+                // Add bot response
+                if (response.error) {
+                    addMessage(`Sorry, I encountered an error: ${response.error}`, 'bot');
+                } else if (response.response) {
+                    addMessage(response.response, 'bot');
+                    
+                    // Store conversation history if available
+                    if (response.history) {
+                        conversationHistory = response.history;
+                    }
+                }
+                scrollToBottom();
+            })
+            .catch(error => {
+                // Remove loading indicator
+                removeLoadingIndicator(loadingId);
+                
+                // Show error message
+                addMessage("Sorry, I couldn't connect to my brain. Please try again later.", 'bot');
+                console.error('Gemini API Error:', error);
+                scrollToBottom();
+            });
+    });
+
+    // Add a message to the chat
+    function addMessage(message, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender + '-message');
+        
+        const contentElement = document.createElement('div');
+        contentElement.classList.add('message-content');
+        contentElement.textContent = message;
+        
+        messageElement.appendChild(contentElement);
+        chatbotMessages.appendChild(messageElement);
+        
+        scrollToBottom();
+    }
+
+    // Show loading indicator
+    function showLoadingIndicator() {
+        const loadingElement = document.createElement('div');
+        loadingElement.classList.add('message', 'bot-message', 'loading-message');
+        loadingElement.innerHTML = `
+            <div class="flex items-center message-content">
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        `;
+        
+        chatbotMessages.appendChild(loadingElement);
+        scrollToBottom();
+        
+        return Date.now(); // Return a unique ID for this loading indicator
+    }
+
+    // Remove loading indicator
+    function removeLoadingIndicator(id) {
+        const loadingMessages = document.querySelectorAll('.loading-message');
+        if (loadingMessages.length > 0) {
+            loadingMessages[loadingMessages.length - 1].remove();
+        }
+    }
+
+    // Function to fetch response from Gemini API
+    async function fetchGeminiResponse(message) {
+        try {
+            // Create a clean request body
+            const requestBody = {
+                message: message
+            };
+            
+            // Only add history if we have previous conversation
+            if (conversationHistory && conversationHistory.length > 0) {
+                requestBody.history = conversationHistory;
+            }
+            
+            const response = await fetch('http://localhost:5000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            const data = await response.json();
+            
+            // Check if the response has an error but also a fallback_response
+            if (data.error && data.fallback_response) {
+                console.error('Gemini API Error:', data.error);
+                return { 
+                    response: data.fallback_response,
+                    error: data.error  // Include the error for debugging
+                };
+            }
+            
+            // Check if the response has an error
+            if (data.error) {
+                return { error: data.error };
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Error fetching from Gemini API:', error);
+            return {
+                error: 'Failed to connect to the server',
+                response: fallbackResponse(message)  // Use the local fallback function
+            };
+        }
+    }
+
+    // Scroll chat to bottom
+    function scrollToBottom() {
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    // Add fallback functionality in case API is not available
+    function fallbackResponse(userInput) {
+        // Simple responses when API is unavailable
+        if (userInput.toLowerCase().includes('hello') || userInput.toLowerCase().includes('hi')) {
+            return "Hello! I'm here to help you find software recommendations. What type of software are you looking for?";
+        } else if (userInput.toLowerCase().includes('recommend') || userInput.toLowerCase().includes('software')) {
+            return "I can help recommend software! Try typing a specific category like 'development', 'design', or 'productivity' to get started.";
+        } else if (userInput.toLowerCase().includes('thank')) {
+            return "You're welcome! Let me know if you need any other software recommendations.";
+        } else {
+            return "I'm here to help with software recommendations. Try asking about specific categories or software types!";
+        }
+    }
 }); 

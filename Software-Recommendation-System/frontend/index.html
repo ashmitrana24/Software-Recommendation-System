@@ -63,5 +63,51 @@
         </div>
     </div>
     <script src="app.js"></script>
+    
+    <!-- Chatbot Container -->
+    <div id="chatbot-container" class="chatbot-container hidden">
+        <div class="chatbot-header">
+            <div class="flex items-center">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="chatbot-title">AI Assistant</h3>
+                    <p class="chatbot-subtitle">Software Advisor</p>
+                </div>
+            </div>
+            <button id="close-chatbot" class="chatbot-close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    Hi there! I'm your AI assistant. How can I help you find the right software today?
+                </div>
+            </div>
+        </div>
+        <form id="chatbot-form" class="chatbot-input-container">
+            <input 
+                type="text" 
+                id="chatbot-input" 
+                placeholder="Type your message..." 
+                autocomplete="off"
+                class="chatbot-input"
+            >
+            <button type="submit" class="chatbot-send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Chatbot Trigger Button -->
+    <button id="chatbot-trigger" class="chatbot-trigger">
+        <span class="chatbot-tooltip">Need help?</span>
+        <div class="relative">
+            <i class="fas fa-robot"></i>
+            <span class="pulse-animation"></span>
+        </div>
+    </button>
 </body>
 </html> 
