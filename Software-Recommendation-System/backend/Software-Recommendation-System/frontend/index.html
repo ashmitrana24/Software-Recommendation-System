@@ -37,10 +37,11 @@
                                 type="text" 
                                 id="search-input" 
                                 class="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-white/50 backdrop-blur-sm"
-                                placeholder="Enter software name and press Enter..." 
+                                placeholder="Start typing to see available software..." 
                                 autocomplete="off"
                             >
                         </div>
+                        <div id="available-software" class="absolute w-full mt-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 z-50"></div>
                     </div>
                     <button 
                         onclick="getRecommendations()" 
@@ -52,14 +53,12 @@
                 </div>
             </div>
 
-            <!-- Results Section - Initially Hidden -->
-            <div id="results-section" class="hidden">
-                <div id="recommendations" class="recommendations space-y-4"></div>
+            <!-- Results Section -->
+            <div id="recommendations" class="recommendations space-y-4"></div>
 
-                <!-- Chart Section -->
-                <div class="chart-container mt-8 p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-lg">
-                    <canvas id="similarityChart"></canvas>
-                </div>
+            <!-- Chart Section -->
+            <div class="chart-container mt-8 p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200 shadow-lg">
+                <canvas id="similarityChart"></canvas>
             </div>
         </div>
     </div>

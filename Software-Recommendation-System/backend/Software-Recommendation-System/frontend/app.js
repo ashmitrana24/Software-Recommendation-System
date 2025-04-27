@@ -31,15 +31,6 @@ let similarityChart = null;
 async function getRecommendations() {
     const searchInput = document.getElementById('search-input').value;
     const recommendationsDiv = document.getElementById('recommendations');
-    const resultsSection = document.getElementById('results-section');
-    
-    if (!searchInput || searchInput.trim() === '') {
-        // If no search input, don't show anything
-        return;
-    }
-    
-    // Show the results section that was initially hidden
-    resultsSection.classList.remove('hidden');
     
     // Show loading state
     recommendationsDiv.innerHTML = `
@@ -217,19 +208,50 @@ function destroyChart() {
     }
 }
 
-// Modify event listeners to remove dropdown functionality
-document.getElementById('search-input').addEventListener('keyup', function(e) {
-    // Only trigger if Enter key is pressed
-    if (e.key === 'Enter') {
-        getRecommendations();
+function showAvailableSoftware() {
+    const searchInput = document.getElementById('search-input');
+    const availableList = document.getElementById('available-software');
+    
+    const userInput = searchInput.value.toLowerCase();
+    const filteredSoftware = AVAILABLE_SOFTWARE.filter(software => 
+        software.toLowerCase().includes(userInput)
+    );
+    
+    if (filteredSoftware.length === 0 && userInput) {
+        availableList.innerHTML = `
+            <div class="py-3 px-4 text-sm text-gray-500">
+                No matching software found
+            </div>
+        `;
+        return;
+    }
+    
+    availableList.innerHTML = `
+        <div class="hint">Available Software</div>
+        <ul class="software-list">
+            ${filteredSoftware.map(software => `
+                <li onclick="selectSoftware('${software.split('(')[0].trim()}')">${software}</li>
+            `).join('')}
+        </ul>
+    `;
+}
+
+function selectSoftware(software) {
+    document.getElementById('search-input').value = software;
+    document.getElementById('available-software').innerHTML = '';
+    getRecommendations();
+}
+
+document.getElementById('search-input').addEventListener('keyup', showAvailableSoftware);
+document.getElementById('search-input').addEventListener('focus', showAvailableSoftware);
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#search-container')) {
+        document.getElementById('available-software').innerHTML = '';
     }
 });
 
 document.getElementById('search-input').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        // Prevent form submission
-        event.preventDefault();
-        // Call getRecommendations on Enter
         getRecommendations();
     }
 });
@@ -307,56 +329,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const contentElement = document.createElement('div');
         contentElement.classList.add('message-content');
-        
-        if (sender === 'bot') {
-            // Format bot messages with markdown-like styling
-            contentElement.innerHTML = formatBotMessage(message);
-        } else {
-            // User messages remain as plain text
-            contentElement.textContent = message;
-        }
+        contentElement.textContent = message;
         
         messageElement.appendChild(contentElement);
         chatbotMessages.appendChild(messageElement);
         
         scrollToBottom();
-    }
-
-    // Function to format bot messages with better styling
-    function formatBotMessage(message) {
-        // Clean up any "text:" prefixes and unnecessary quotes
-        message = message.replace(/^text:\s*/, '');
-        message = message.replace(/^"(.+)"$/, '$1');
-        
-        // Replace line breaks with HTML breaks
-        let formattedMessage = message.replace(/\n/g, '<br>');
-        
-        // Bold text between ** **
-        formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        
-        // Italic text between * *
-        formattedMessage = formattedMessage.replace(/\*(.*?)\*/g, '<em>$1</em>');
-        
-        // Code/monospace text between ` `
-        formattedMessage = formattedMessage.replace(/`(.*?)`/g, '<code>$1</code>');
-        
-        // Links in format [text](url)
-        formattedMessage = formattedMessage.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-        
-        // Bullet points
-        formattedMessage = formattedMessage.replace(/- (.*?)(?:<br>|$)/g, '<div class="list-item">• $1</div>');
-        formattedMessage = formattedMessage.replace(/• (.*?)(?:<br>|$)/g, '<div class="list-item">• $1</div>');
-        
-        // Numbered lists (1. 2. 3. etc)
-        formattedMessage = formattedMessage.replace(/(\d+)\. (.*?)(?:<br>|$)/g, '<div class="list-item"><span class="list-number">$1.</span> $2</div>');
-        
-        // Highlight important information
-        formattedMessage = formattedMessage.replace(/\[!(.*?)\]/g, '<div class="highlight-info">$1</div>');
-        
-        // Add span around emojis for better styling (optional)
-        formattedMessage = formattedMessage.replace(/([\uD800-\uDBFF][\uDC00-\uDFFF])/g, '<span class="emoji">$1</span>');
-        
-        return formattedMessage;
     }
 
     // Show loading indicator
@@ -443,13 +421,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function fallbackResponse(userInput) {
         // Simple responses when API is unavailable
         if (userInput.toLowerCase().includes('hello') || userInput.toLowerCase().includes('hi')) {
-            return "**Hi there!** 👋 I'm here to help you find software recommendations. What type of software are you looking for today?";
+            return "Hello! I'm here to help you find software recommendations. What type of software are you looking for?";
         } else if (userInput.toLowerCase().includes('recommend') || userInput.toLowerCase().includes('software')) {
-            return "I'd be happy to help you find some software! 😊 Here are some categories you might be interested in:\n\n1. *Development* tools like IDEs and code editors\n2. *Design* software for graphics and UI/UX\n3. *Productivity* apps to improve your workflow\n4. *Communication* tools for teams\n\nOr just tell me what software you're currently using, and I'll suggest some alternatives!";
+            return "I can help recommend software! Try typing a specific category like 'development', 'design', or 'productivity' to get started.";
         } else if (userInput.toLowerCase().includes('thank')) {
-            return "You're welcome! 😄 [!Feel free to ask if you need more recommendations or have questions about specific software. I'm always here to help!]";
+            return "You're welcome! Let me know if you need any other software recommendations.";
         } else {
-            return "Hey there! 👋 I'm here to help with software recommendations. Here's what you can do:\n\n- Ask about specific categories like `development`, `design`, or `productivity`\n- Tell me about software you already use, and I'll find alternatives\n- Ask questions about features of different software tools\n\nWhat are you looking for today?";
+            return "I'm here to help with software recommendations. Try asking about specific categories or software types!";
         }
     }
 }); 

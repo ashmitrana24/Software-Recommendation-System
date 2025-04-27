@@ -93,6 +93,38 @@ small {
     margin-top: 5px;
 }
 
+.available-software {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.hint {
+    @apply text-sm text-gray-500 px-4 py-3 border-b border-gray-200;
+}
+
+.software-list {
+    @apply divide-y divide-gray-200;
+}
+
+.software-list li {
+    @apply px-4 py-3 hover:bg-indigo-50 cursor-pointer transition-colors text-gray-700 flex items-center;
+}
+
+.software-list li::before {
+    content: '\f108';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    @apply mr-3 text-indigo-500 opacity-70;
+}
+
 .chart-container {
     height: 300px;
     position: relative;
@@ -446,75 +478,4 @@ small {
 .user-message .message-content code {
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
-}
-
-/* Enhanced Chatbot Message Styling */
-.bot-message .message-content {
-    @apply text-gray-800 leading-relaxed;
-    font-size: 0.95rem;
-}
-
-.bot-message .message-content strong {
-    @apply font-bold text-indigo-700;
-}
-
-.bot-message .message-content em {
-    @apply italic text-gray-700;
-}
-
-.bot-message .message-content code {
-    @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono text-indigo-600;
-}
-
-.bot-message .message-content .list-item {
-    @apply pl-2 my-1.5;
-}
-
-.bot-message .message-content .list-number {
-    @apply font-semibold text-indigo-600 mr-1;
-}
-
-.bot-message .message-content .highlight-info {
-    @apply bg-indigo-50 p-2 my-2 border-l-4 border-indigo-500 rounded-r text-indigo-800;
-    display: block;
-    animation: highlightFadeIn 0.5s ease-in-out;
-}
-
-@keyframes highlightFadeIn {
-    from { transform: translateX(-10px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-/* Emoji styling */
-.bot-message .message-content .emoji {
-    display: inline-block;
-    font-size: 1.2em;
-    margin: 0 1px;
-    transform-origin: center;
-    animation: emojiPulse 0.6s ease-in-out;
-}
-
-@keyframes emojiPulse {
-    0% { transform: scale(0.8); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-/* Add some spacing between paragraphs */
-.bot-message .message-content br + br {
-    @apply block my-2;
-}
-
-/* Make links nicer */
-.bot-message .message-content a {
-    @apply text-indigo-600 underline hover:text-indigo-800;
-}
-
-/* Enhance the typing indicator */
-.typing-indicator {
-    @apply bg-gray-100 px-3 py-1.5 rounded-full;
-}
-
-.typing-indicator span {
-    @apply bg-indigo-500;
 } 
